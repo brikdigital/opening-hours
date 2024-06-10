@@ -8,7 +8,7 @@ use yii\base\UnknownPropertyException;
 /**
  * Class FieldData
  */
-class periodData extends \ArrayObject
+class PeriodData extends \ArrayObject
 {
     /**
      * @var \DateTime Start date of this period
