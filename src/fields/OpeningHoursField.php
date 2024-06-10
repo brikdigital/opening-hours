@@ -4,8 +4,8 @@ namespace brikdigital\craftopeninghours\fields;
 
 use brikdigital\craftopeninghours\data\DayData;
 use brikdigital\craftopeninghours\data\FieldData;
-use brikdigital\craftopeninghours\data\periodData;
-use brikdigital\craftopeninghours\web\assets\openinghours\OpeningHoursAsset;
+use brikdigital\craftopeninghours\data\PeriodData;
+use brikdigital\craftopeninghours\assetbundles\OpeningHoursAsset;
 use brikdigital\craftopeninghours\OpeningHours;
 use Craft;
 use craft\base\ElementInterface;
@@ -137,7 +137,7 @@ class OpeningHoursField extends Field
                     $data[] = new DayData($day, $dayData);
                 }
 
-                $periodData['periodData'][] = new periodData(DateTimeHelper::toDateTime($period['from']),DateTimeHelper::toDateTime($period['till']), $data);
+                $periodData['periodData'][] = new PeriodData(DateTimeHelper::toDateTime($period['from']),DateTimeHelper::toDateTime($period['till']), $data);
             }
 
         }
@@ -182,7 +182,7 @@ class OpeningHoursField extends Field
 
         foreach ($value['periodData'] as $periodData) {
             $serializedDays = [];
-            $days = $periodData instanceof periodData ? $periodData : $periodData['days'];
+            $days = $periodData instanceof PeriodData ? $periodData : $periodData['days'];
             foreach($days as $day) {
                 $serializedDay = [];
                 foreach (array_keys($this->slots) as $colId) {
@@ -208,14 +208,13 @@ class OpeningHoursField extends Field
         // JS/CSS modules
         $tagOptions = [
             'depends' => [
-                'brikdigital\\craftopeninghours\\web\\assets\\openinghours\\OpeningHoursAsset',
+                'brikdigital\\craftopeninghours\\assetbundles\\OpeningHoursAsset',
             ],
         ];
         // JS/CSS modules
         try {
             OpeningHours::$view->registerAssetBundle(OpeningHoursAsset::class);
-            OpeningHours::$plugin->vite->register('src/js/openinghours.js', false, $tagOptions, $tagOptions);
-            OpeningHours::$plugin->vite->register('src/js/openinghours.js', false, $tagOptions, $tagOptions);
+            OpeningHours::$plugin->vite->register('src/js/main.ts', false, $tagOptions, $tagOptions);
         } catch (InvalidConfigException $e) {
             Craft::error($e->getMessage(), __METHOD__);
         }

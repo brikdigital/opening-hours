@@ -2,9 +2,11 @@
 
 namespace brikdigital\craftopeninghours;
 
-use brikdigital\craftopeninghours\web\assets\openinghours\OpeningHoursAsset;
+use brikdigital\craftopeninghours\variables\ViteVariable;
+use brikdigital\craftopeninghours\assetbundles\OpeningHoursAsset;
 use Craft;
 use brikdigital\craftopeninghours\fields\OpeningHoursField;
+use craft\web\twig\variables\CraftVariable;
 use nystudio107\pluginvite\services\VitePluginService;
 use craft\base\Plugin;
 use craft\events\RegisterComponentTypesEvent;
@@ -13,12 +15,14 @@ use craft\web\View;
 use yii\base\Event;
 
 /**
- * opening hours plugin
+ * Craft plugin for specifying opening times
  *
- * @method static OpeningHours getInstance()
  * @author Brik.digital <service@brik.digital>
- * @copyright Brik.digital
+ * @author Alyxia Sother <alyxia@riseup.net>
  * @license MIT
+ * @copyright 2023+ Brik.digital
+ * @method static OpeningHours getInstance()
+ * @property-read VitePluginService $vite
  */
 class OpeningHours extends Plugin
 {
@@ -36,10 +40,10 @@ class OpeningHours extends Plugin
                     'class' => VitePluginService::class,
                     'assetClass' => OpeningHoursAsset::class,
                     'useDevServer' => true,
-                    'devServerPublic' => 'http://localhost:3001',
+                    'devServerPublic' => 'http://localhost:3004',
                     'serverPublic' => 'http://localhost:8000',
-                    'errorEntry' => 'src/js/openinghours.js',
-                    'devServerInternal' => 'http://opening-hours-v4-buildchain-dev:3001',
+                    'errorEntry' => 'src/js/main.ts',
+                    'devServerInternal' => 'http://opening-hours-v4-buildchain-dev:3004',
                     'checkDevServer' => true,
                 ],
             ],
@@ -66,5 +70,18 @@ class OpeningHours extends Plugin
         Event::on(Fields::class, Fields::EVENT_REGISTER_FIELD_TYPES, function (RegisterComponentTypesEvent $event) {
             $event->types[] = OpeningHoursField::class;
         });
+
+        Event::on(
+            CraftVariable::class,
+            CraftVariable::EVENT_INIT,
+            function (Event $event) {
+                /** @var CraftVariable $variable */
+                $variable = $event->sender;
+                $variable->set('vite', [
+                    'class' => ViteVariable::class,
+                    'viteService' => $this->vite
+                ]);
+            }
+        );
     }
 }

@@ -1,9 +1,19 @@
 {% import "_includes/forms" as forms %}
 
+{#{% set scriptTagOptions = {#}
+{#    'depends': [#}
+{#        'brikdigital\\craftopeninghours\\assetbundles\\OpeningHoursAsset'#}
+{#    ],#}
+{#} %}#}
+{#{{ craft.vite.register('src/js/app.ts', false, scriptTagOptions) }}#}
+
 {% namespace name %}
+    {{ dump(craft.vite.script('src/js/main.ts')) }}
     <div id="{{ id }}" class="opening-hours-field">
         {{ dump(periodData) }}
         {% for period in periodData %}
+            {{ dump(tableColumns) }}
+            {{ dump(period.rows) }}
 
             <div class="opening-hours-field-period">
                 <div class="opening-hours-field-period-title">
