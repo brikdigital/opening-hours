@@ -248,15 +248,14 @@ class OpeningHoursField extends Field
         $periods = [];
         $periodValues = $value['periodData'] ?? [[]];
         foreach ($periodValues as $period) {
-            Craft::dd($period);
-            $periodData = ['from' => $period['from'] ?? null, 'till' => $period['till']?? null];
+            $periodData = ['from' => $period->from ?? null, 'till' => $period->till ?? null];
             $rows = [];
             foreach ($days as $day) {
                 $row = [
                     'day' => $locale->getWeekDayName($day, Locale::LENGTH_FULL),
                 ];
 
-                $data = $period['days'][(string)$day] ?? [];
+                $data = $period[(string)$day] ?? [];
                 foreach ($this->slots as $slotId => $col) {
                     $row[$slotId] = [
                         'value' => $data[$slotId] ?? null,
@@ -268,8 +267,6 @@ class OpeningHoursField extends Field
             $periodData['rows'] = $rows;
             $periods[] = $periodData;
         }
-
-        Craft::dd($periods);
 
 
         $variables = [];
