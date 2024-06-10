@@ -1,0 +1,10 @@
+.opening-hours-field-period-title {
+    display: flex;
+    align-items: center;
+}
+.opening-hours-field-period-title .period-title {
+    margin: 0 8px 0 0;
+}
+.opening-hours-field-period-title span {
+    margin: 0 8px;
+}

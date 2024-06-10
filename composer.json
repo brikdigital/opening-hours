@@ -1,0 +1,40 @@
+{
+    "name": "brik-digital/craft-opening-hours",
+    "description": "Extensive opening hours field with opening hours per period, multiple opening hours per day and exceptional opening hours.",
+    "type": "craft-plugin",
+    "version": "0.0.1",
+    "license": "mit",
+    "support": {
+        "email": "service@brik.digital"
+    },
+    "require": {
+        "php": ">=8.0.2",
+        "craftcms/cms": "^4.8.0",
+        "nystudio107/craft-plugin-vite": "^4.0"
+    },
+    "require-dev": {
+        "craftcms/phpstan": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "brikdigital\\craftopeninghours\\": "src/"
+        }
+    },
+    "extra": {
+        "handle": "opening-hours",
+        "name": "opening hours",
+        "developer": "Brik.digital",
+        "documentationUrl": "",
+        "class": "brikdigital\\craftopeninghours\\OpeningHours"
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "8.0.2"
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    }
+}

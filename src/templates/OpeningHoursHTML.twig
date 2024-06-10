@@ -1,0 +1,37 @@
+{% import "_includes/forms" as forms %}
+
+{% namespace name %}
+    <div id="{{ id }}" class="opening-hours-field">
+        {{ dump(periodData) }}
+        {% for period in periodData %}
+
+            <div class="opening-hours-field-period">
+                <div class="opening-hours-field-period-title">
+                    <span class="period-title">{{ 'period'|t("opening-hours") }}</span>
+                    <span>{{ 'from'|t("opening-hours") }}:</span>
+                    {{ forms.date({
+                        name: "periodData[period"~loop.index~"][from]",
+                        id: id ~ "-period-from",
+                        value: period.from
+                    }) }}
+                    <span>{{ 'till'|t("opening-hours") }}:</span>
+                    {{ forms.date({
+                        name: "periodData[period"~loop.index~"][till]",
+                        id: id ~ "-period-till",
+                        value: period.till
+                    }) }}
+                </div>
+                <div class="">
+                    {{ forms.editableTable({
+                        name:  "periodData[period"~loop.index~"][days]",
+                        id: id ~ "-period-days",
+                        cols: tableColumns,
+                        rows: period.rows,
+                        static: false,
+                        staticRows: true
+                    }) }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endnamespace %}
