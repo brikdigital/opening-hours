@@ -32,5 +32,6 @@
     "./src/**/*.ts",
     "./src/**/*.vue",
     "node_modules/@brik-digital/craftcms-typedefs/all.d.ts",
+    "node_modules/@types/jquery/**/*.d.ts"
   ],
 }

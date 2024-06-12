@@ -29,6 +29,8 @@ class OpeningHoursField extends Field
      */
     public $slots;
 
+    public array $periods;
+
     public static function displayName(): string
     {
         return Craft::t('opening-hours', 'Opening Hours');
@@ -264,6 +266,8 @@ class OpeningHoursField extends Field
             $periodData['rows'] = $rows;
             $periods[] = $periodData;
         }
+
+        $this->periods = $periods;
 
         $emptyRows = [];
         foreach ($days as $day) {

@@ -1,16 +1,22 @@
 declare namespace Craft.OpeningHours {
+  interface Settings {
+    periods: unknown[];
+  }
+
   interface Instance {
-    instanceMethod(): void;
-    id: number;
+    container: JQuery<HTMLElement>;
+    namespacedId: string;
+    settings: Settings;
+    currentRowsAmount: number;
+    addPeriodButton: JQuery<HTMLElement>;
+
+    addRow(this): void;
+    getNewRowHTML(this): string;
+    updateAddPeriodButton(this): void;
   }
 
-  interface Static {
-    test: string;
-    staticMethod(): void;
-  }
-
-  interface InputConstructor extends Class<Instance, Static> {
-    new(id: number): Instance;
+  interface InputConstructor extends BaseClass<Instance, object> {
+    new (namespacedId: string, id: string, settings: string): Instance;
   }
 
   let Input: InputConstructor;
