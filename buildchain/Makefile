@@ -8,19 +8,18 @@ DOCKER_NETWORK?=ddev-plugcraft4_default
 DOCKER_RUN=docker container run --rm -it --network "${DOCKER_NETWORK}" -v "${CURDIR}"/../:/app
 #DOCKER_RUN=docker container run --rm -it -v "${CURDIR}"/../:/app
 
-.PHONY: build clean dev image-build image-check npm ssh
+.PHONY: build clean dev image-build image-check pnpm ssh
 
-# Perform a dist build via npm run build
+# Perform a dist build via pnpm run build
 build: image-check
 	${DOCKER_RUN} --name ${CONTAINER}-$@ ${IMAGE_NAME} run build
-# Remove node_modules/ & package-lock.json
+# Remove node_modules/
 clean:
 	rm -rf node_modules/
-	rm -f package-lock.json
-# Run the development server via npm run dev
+# Run the development server via pnpm run dev
 dev: image-check
 	${DOCKER_RUN} --name ${CONTAINER}-$@ -e DEV_PORT="${DEV_PORT}" -p ${DEV_PORT}:${DEV_PORT} ${IMAGE_NAME} run dev
-# Build the Docker image & run npm install
+# Build the Docker image & run pnpm install
 image-build:
 	docker build . -t ${IMAGE_NAME} --build-arg TAG=${TAG} --no-cache
 	${DOCKER_RUN} --name ${CONTAINER}-$@ ${IMAGE_NAME} install
@@ -29,8 +28,8 @@ image-check:
 ifeq ($(IMAGE_INFO), [])
 image-check: image-build
 endif
-# Run the passed in npm command
-npm: image-check
+# Run the passed in pnpm command
+pnpm: image-check
 	${DOCKER_RUN} --name ${CONTAINER}-$@ ${IMAGE_NAME} $(filter-out $@,$(MAKECMDGOALS)) $(MAKEFLAGS)
 # Open a shell inside of the container
 ssh: image-check

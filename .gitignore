@@ -3,6 +3,7 @@
 *.log
 *Thumbs.db
 .env
+/.pnpm-store
 /node_modules
 /vendor
 .ddev
