@@ -10,10 +10,8 @@ use brikdigital\craftopeninghours\OpeningHours;
 use Craft;
 use craft\base\ElementInterface;
 use craft\base\Field;
-use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Html;
 use craft\helpers\Json;
-use craft\helpers\StringHelper;
 use yii\base\InvalidConfigException;
 use yii\db\Schema;
 use craft\i18n\Locale;
@@ -267,17 +265,46 @@ class OpeningHoursField extends Field
             $periods[] = $periodData;
         }
 
+        $emptyRows = [];
+        foreach ($days as $day) {
+            $row = [
+                'day' => $locale->getWeekDayName($day, Locale::LENGTH_FULL),
+            ];
+
+            foreach ($this->slots as $slotId => $col) {
+                $row[$slotId] = [
+                    'value' => null,
+                ];
+            }
+
+            $emptyRows[(string)$day] = $row;
+        }
+
+
+        $view = Craft::$app->getView();
+
+        $id = Html::id($this->handle);
+        $nameSpacedId = $view->namespaceInputId($id);
+        $settings = $this->toArray();
+
+        $jsSettings = Json::encode($settings);
+        $js = <<< JS
+            var openingHoursInput = new Craft.OpeningHours.Input('$nameSpacedId', '$id', '$jsSettings');
+        JS;
+        foreach ($periods as $period) {
+            $periodJs = Json::encode($period);
+//            $js .= "\nopeningHoursInput.addPeriod($periodJs)";
+        }
+        $view->registerJs($js);
 
         $variables = [];
         $variables['name'] = $this->handle;
-        $id = Craft::$app->getView()->formatInputId($this->handle);
-        $nameSpacedId = Craft::$app->getView()->namespaceInputId($id);
         $variables['id'] = $id;
         $variables['nameSpacedId'] = $nameSpacedId;
         $variables['tableColumns'] = $columns;
         $variables['periodData'] = $periods;
-
-        return Craft::$app->getView()->renderTemplate(
+        $variables['emptyRows'] = $emptyRows;
+        return $view->renderTemplate(
             'opening-hours/OpeningHoursHTML',
             $variables
         );

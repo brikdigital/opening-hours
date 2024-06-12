@@ -1,15 +1,10 @@
 {% import "_includes/forms" as forms %}
 
 {% namespace name %}
-{#    {{ dump(craft.vite.script('src/js/main.ts')) }}#}
     <div id="{{ id }}" class="opening-hours-field">
-{#        {{ dump(periodData) }}#}
         {% for period in periodData %}
-{#            {{ dump(tableColumns) }}#}
-{#            {{ dump(period.rows) }}#}
-
-            <div class="opening-hours-field-period">
-                <div class="opening-hours-field-period-title">
+            <div class="opening-hours-field-period mb-2">
+                <div class="opening-hours-field-period-title flex flex-row gap-1 mb-2">
                     <span class="period-title">{{ 'period'|t("opening-hours") }}</span>
                     <span>{{ 'from'|t("opening-hours") }}:</span>
                     {{ forms.date({
@@ -36,5 +31,35 @@
                 </div>
             </div>
         {% endfor %}
+
+        <template id="placeholderPeriodData">
+            <div class="opening-hours-field-period mb-2">
+                <div class="opening-hours-field-period-title flex flex-row gap-1 mb-2">
+                    <span class="period-title">{{ 'period'|t("opening-hours") }}</span>
+                    <span>{{ 'from'|t("opening-hours") }}:</span>
+                    {{ forms.date({
+                        name: "periodData[period___NEWINDEX___][from]",
+                        id: id ~ "-period-from",
+                        value: null
+                    }) }}
+                    <span>{{ 'till'|t("opening-hours") }}:</span>
+                    {{ forms.date({
+                        name: "periodData[period___NEWINDEX___][till]",
+                        id: id ~ "-period-till",
+                        value: null
+                    }) }}
+                </div>
+                <div class="">
+                    {{ forms.editableTable({
+                        name:  "periodData[period___NEWINDEX___][days]",
+                        id: id ~ "-period-days",
+                        cols: tableColumns,
+                        rows: emptyRows,
+                        static: false,
+                        staticRows: true
+                    }) }}
+                </div>
+            </div>
+        </template>
     </div>
 {% endnamespace %}
