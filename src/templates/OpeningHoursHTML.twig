@@ -11,13 +11,13 @@
                             <span>{{ 'from'|t("opening-hours") }}:</span>
                             {{ forms.date({
                                 name: "periodData[period"~loop.index~"][from]",
-                                id: id ~ "-period-from",
+                                id: id ~ "-period-from-"~loop.index,
                                 value: period.from
                             }) }}
                             <span>{{ 'till'|t("opening-hours") }}:</span>
                             {{ forms.date({
                                 name: "periodData[period"~loop.index~"][till]",
-                                id: id ~ "-period-till",
+                                id: id ~ "-period-till-"~loop.index,
                                 value: period.till
                             }) }}
                         </div>
@@ -26,7 +26,7 @@
                     <div class="">
                         {{ forms.editableTable({
                             name:  "periodData[period"~loop.index~"][days]",
-                            id: id ~ "-period-days",
+                            id: id ~ "-period-days-"~loop.index,
                             cols: tableColumns,
                             rows: period.rows,
                             static: false,
