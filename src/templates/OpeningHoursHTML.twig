@@ -3,35 +3,54 @@
 {% namespace name %}
     <div id="{{ id }}" class="opening-hours-field">
         {% for period in periodData %}
-            <div class="opening-hours-field-period mb-2">
-                <div class="opening-hours-field-period-title flex flex-row gap-1 mb-2">
-                    <span class="period-title">{{ 'period'|t("opening-hours") }}</span>
-                    <span>{{ 'from'|t("opening-hours") }}:</span>
-                    {{ forms.date({
-                        name: "periodData[period"~loop.index~"][from]",
-                        id: id ~ "-period-from",
-                        value: period.from
-                    }) }}
-                    <span>{{ 'till'|t("opening-hours") }}:</span>
-                    {{ forms.date({
-                        name: "periodData[period"~loop.index~"][till]",
-                        id: id ~ "-period-till",
-                        value: period.till
-                    }) }}
-                </div>
-                <div class="">
-                    {{ forms.editableTable({
-                        name:  "periodData[period"~loop.index~"][days]",
-                        id: id ~ "-period-days",
-                        cols: tableColumns,
-                        rows: period.rows,
-                        static: false,
-                        staticRows: true
-                    }) }}
+            <div class="mb-8">
+                <div class="opening-hours-field-period mb-2">
+                    <div class="opening-hours-field-period-title flex flex-row gap-1 mb-2 justify-between">
+                        <div class="flex">
+                            <span class="period-title">{{ 'period'|t("opening-hours") }}</span>
+                            <span>{{ 'from'|t("opening-hours") }}:</span>
+                            {{ forms.date({
+                                name: "periodData[period"~loop.index~"][from]",
+                                id: id ~ "-period-from",
+                                value: period.from
+                            }) }}
+                            <span>{{ 'till'|t("opening-hours") }}:</span>
+                            {{ forms.date({
+                                name: "periodData[period"~loop.index~"][till]",
+                                id: id ~ "-period-till",
+                                value: period.till
+                            }) }}
+                        </div>
+                        <button type="button" class="btn removePeriodButton">{{ 'Remove schedule'|t('opening-hours') }}</button>
+                    </div>
+                    <div class="">
+                        {{ forms.editableTable({
+                            name:  "periodData[period"~loop.index~"][days]",
+                            id: id ~ "-period-days",
+                            cols: tableColumns,
+                            rows: period.rows,
+                            static: false,
+                            staticRows: true
+                        }) }}
+                    </div>
                 </div>
             </div>
         {% endfor %}
-        <button id="addNewPeriodButton">Add new period</button>
+        <button id="addNewPeriodButton" type="button" class="btn mb-8">{{ 'Add new period'|t('opening-hours') }}</button>
+        <div class="heading" class="">{{ 'Add new period'|t('opening-hours') }}</div>
+        <div class="opening-hours-field-exclusions mt-2">
+            {{ forms.editableTable({
+                name: "periodData[exclusions]",
+                id: id ~ "-period-exclusions",
+                cols: exclusionColumns,
+                rows: exclusionRows,
+                static: false,
+                staticRows: false,
+                allowAdd: true,
+                allowDelete: true,
+            }) }}
+        </div>
+
 
         <template id="placeholderPeriodData">
             <div class="opening-hours-field-period mb-2">
@@ -40,20 +59,20 @@
                     <span>{{ 'from'|t("opening-hours") }}:</span>
                     {{ forms.date({
                         name: "periodData[period___NEWINDEX___][from]",
-                        id: id ~ "-period-from",
+                        id: id ~ "-period-from-___NEWINDEX___",
                         value: null
                     }) }}
                     <span>{{ 'till'|t("opening-hours") }}:</span>
                     {{ forms.date({
                         name: "periodData[period___NEWINDEX___][till]",
-                        id: id ~ "-period-till",
+                        id: id ~ "-period-till-___NEWINDEX___",
                         value: null
                     }) }}
                 </div>
                 <div class="">
                     {{ forms.editableTable({
                         name:  "periodData[period___NEWINDEX___][days]",
-                        id: id ~ "-period-days",
+                        id: id ~ "-period-days-___NEWINDEX___",
                         cols: tableColumns,
                         rows: emptyRows,
                         static: false,

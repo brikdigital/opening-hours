@@ -8,28 +8,13 @@ use yii\base\UnknownPropertyException;
 /**
  * Class FieldData
  */
-class PeriodData extends \ArrayObject
+class ExclusionData extends \ArrayObject
 {
-    /**
-     * @var \DateTime Start date of this period
-     */
-    public $from;
 
-    /**
-     * @var \DateTime End date of this period
-     */
-    public $till;
 
     public array $exclusions;
-
-    /**
-     * @param int $dayIndex
-     * @param array $input
-     */
-    public function __construct(\DateTime $from, \DateTime $till, array $days)
+    public function __construct(array $days)
     {
-        $this->from = $from;
-        $this->till = $till;
         parent::__construct($days);
     }
 

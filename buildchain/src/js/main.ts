@@ -21,6 +21,12 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
       e.preventDefault();
       this.addRow();
     });
+
+    this.removePeriodButtons = $(`.removePeriodButton`);
+    this.removePeriodButtons.on('click', (e) => {
+      e.preventDefault();
+      this.deleteRow();
+    });
   },
 
   addRow() {
@@ -39,12 +45,16 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
     // TODO: Add Craft.date/timepickerOptions to typedefs
     // TODO: Figure out why the date pickers are malfunctioning
     // TODO: Either one of these is probably valid, preference for the latter
-    // $('.datewrapper > input', period).datepicker(Craft.datepickerOptions);
-    // $('.timewrapper > input', period).timepicker(Craft.timepickerOptions);
+    $('.datewrapper > input', period).datepicker(Craft.datepickerOptions);
+    $('.timewrapper > input', period).timepicker(Craft.timepickerOptions);
     // period.datepicker(Craft.datepickerOptions);
-    period.timepicker(Craft.timepickerOptions);
+    // period.timepicker(Craft.timepickerOptions);
 
     this.updateAddPeriodButton();
+  },
+
+  deleteRow() {
+    console.log('asfasdfaf');
   },
 
   getNewRowHTML() {

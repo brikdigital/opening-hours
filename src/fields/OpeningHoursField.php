@@ -3,6 +3,7 @@
 namespace brikdigital\craftopeninghours\fields;
 
 use brikdigital\craftopeninghours\data\DayData;
+use brikdigital\craftopeninghours\data\ExclusionData;
 use brikdigital\craftopeninghours\data\FieldData;
 use brikdigital\craftopeninghours\data\PeriodData;
 use brikdigital\craftopeninghours\assetbundles\OpeningHoursAsset;
@@ -17,6 +18,7 @@ use yii\db\Schema;
 use craft\i18n\Locale;
 use craft\helpers\Cp;
 use craft\helpers\DateTimeHelper;
+use function Arrayy\array_first;
 
 /**
  * Opening Hours field type
@@ -30,6 +32,8 @@ class OpeningHoursField extends Field
     public $slots;
 
     public array $periods;
+
+    public array $exclusions = [];
 
     public static function displayName(): string
     {
@@ -121,25 +125,27 @@ class OpeningHoursField extends Field
         }
         $periodData = [];
         if(isset($value['periodData'])) {
-            foreach($value['periodData'] as $period) {
+            foreach($value['periodData'] as $index => $period) {
+                if($index == 'exclusions' || !isset($period['from'])) {
+                    $periodData['periodData']['exclusions'] = new ExclusionData($period);
+                } else {
+                    $data = [];
 
-                $data = [];
-
-                for ($day = 0; $day <= 6; $day++) {
-                    // Normalize the values and make them accessible from both the slot IDs and the handles
-                    $dayData = [];
-                    foreach ($this->slots as $slotId => $slot) {
-                        $dayData[$slotId] = DateTimeHelper::toDateTime($period['days'][$day][$slotId] ?? null) ?: null;
-                        if ($slot['handle']) {
-                            $dayData[$slot['handle']] = $dayData[$slotId];
+                    for ($day = 0; $day <= 6; $day++) {
+                        // Normalize the values and make them accessible from both the slot IDs and the handles
+                        $dayData = [];
+                        foreach ($this->slots as $slotId => $slot) {
+                            $dayData[$slotId] = DateTimeHelper::toDateTime($period['days'][$day][$slotId] ?? null) ?: null;
+                            if ($slot['handle']) {
+                                $dayData[$slot['handle']] = $dayData[$slotId];
+                            }
                         }
+                        $data[] = new DayData($day, $dayData);
                     }
-                    $data[] = new DayData($day, $dayData);
+
+                    $periodData['periodData'][] = new PeriodData(DateTimeHelper::toDateTime($period['from']), DateTimeHelper::toDateTime($period['till']), $data);
                 }
-
-                $periodData['periodData'][] = new PeriodData(DateTimeHelper::toDateTime($period['from']),DateTimeHelper::toDateTime($period['till']), $data);
             }
-
         }
 
 //        if (is_string($value) && !empty($value)) {
@@ -180,25 +186,30 @@ class OpeningHoursField extends Field
         /** @var FieldData $value */
         $serialized = [];
 
-        foreach ($value['periodData'] as $periodData) {
-            $serializedDays = [];
-            $days = $periodData instanceof PeriodData ? $periodData : $periodData['days'];
-            foreach($days as $day) {
-                $serializedDay = [];
-                foreach (array_keys($this->slots) as $colId) {
-                    $serializedDay[$colId] = parent::serializeValue($day[$colId] ?? null);
+        foreach ($value['periodData'] as $index => $periodData) {
+            if($index == 'exclusions') {
+                $serialized['periodData']['eclusions'] = parent::serializeValue($periodData);
+            } else {
+                $serializedDays = [];
+                $days = $periodData instanceof PeriodData ? $periodData : $periodData['days'];
+                foreach($days as $day) {
+                    $serializedDay = [];
+                    foreach (array_keys($this->slots) as $colId) {
+                        $serializedDay[$colId] = parent::serializeValue($day[$colId] ?? null);
+                    }
+                    $serializedDays[] = $serializedDay;
                 }
-                $serializedDays[] = $serializedDay;
+
+                $serializedPeriod = [
+                    'from' => parent::serializeValue(is_array($periodData) ? $periodData['from'] : $periodData->from),
+                    'till' => parent::serializeValue(is_array($periodData) ? $periodData['till'] : $periodData->till),
+                    'days' => $serializedDays
+                ];
+
+
+                $serialized['periodData'][] = $serializedPeriod;
             }
 
-            $serializedPeriod = [
-                'from' => parent::serializeValue(is_array($periodData) ? $periodData['from'] : $periodData->from),
-                'till' => parent::serializeValue(is_array($periodData) ? $periodData['till'] : $periodData->till),
-                'days' => $serializedDays
-            ];
-
-
-            $serialized['periodData'][] = $serializedPeriod;
         }
         return $serialized;
     }
@@ -246,25 +257,35 @@ class OpeningHoursField extends Field
         $locale = Craft::$app->getLocale();
         $periods = [];
         $periodValues = $value['periodData'] ?? [[]];
-        foreach ($periodValues as $period) {
-            $periodData = ['from' => $period->from ?? null, 'till' => $period->till ?? null];
-            $rows = [];
-            foreach ($days as $day) {
-                $row = [
-                    'day' => $locale->getWeekDayName($day, Locale::LENGTH_FULL),
-                ];
-
-                $data = $period[(string)$day] ?? [];
-                foreach ($this->slots as $slotId => $col) {
-                    $row[$slotId] = [
-                        'value' => $data[$slotId] ?? null,
+        foreach ($periodValues as $index => $period) {
+            if($index != 'exclusions') {
+                $periodData = ['from' => $period->from ?? null, 'till' => $period->till ?? null];
+                $rows = [];
+                foreach ($days as $day) {
+                    $row = [
+                        'day' => $locale->getWeekDayName($day, Locale::LENGTH_FULL),
                     ];
-                }
 
-                $rows[(string)$day] = $row;
+                    $data = $period[(string)$day] ?? [];
+                    foreach ($this->slots as $slotId => $col) {
+                        $row[$slotId] = [
+                            'value' => $data[$slotId] ?? null,
+                        ];
+                    }
+
+                    $rows[(string)$day] = $row;
+                }
+                $periodData['rows'] = $rows;
+                $periods[] = $periodData;
+            } else {
+                $this->exclusions = [];
+                foreach ($period as $index => $exclusion) {
+                    $this->exclusions[$index] = [];
+                    foreach($exclusion as $dataIndex => $data) {
+                        $this->exclusions[$index][$dataIndex] = ['value' => array_first($data)];
+                    }
+                }
             }
-            $periodData['rows'] = $rows;
-            $periods[] = $periodData;
         }
 
         $this->periods = $periods;
@@ -308,6 +329,31 @@ class OpeningHoursField extends Field
         $variables['tableColumns'] = $columns;
         $variables['periodData'] = $periods;
         $variables['emptyRows'] = $emptyRows;
+
+        $variables['exclusionColumns'] = [];
+        $variables['exclusionColumns'][] = [
+            'heading' => 'Datum',
+            'type' => 'date'
+        ];
+        $variables['exclusionRows'] = $this->exclusions;
+//        $variables['exclusionRows'][] = [
+//            'value' => null
+//        ];
+
+        foreach ($this->slots as $slotId => $slot) {
+            $variables['exclusionColumns'][$slotId] = [
+                'heading' => Craft::t('site', $slot['name']),
+                'type' => 'time',
+            ];
+        }
+//        foreach ($this->slots as $slotId => $col) {
+//            $variables['exclusionRows'][$slotId] = [
+//                'value' => null
+//            ];
+//        }
+
+//        dd($variables);
+
         return $view->renderTemplate(
             'opening-hours/OpeningHoursHTML',
             $variables
