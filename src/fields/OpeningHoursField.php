@@ -188,7 +188,7 @@ class OpeningHoursField extends Field
 
         foreach ($value['periodData'] as $index => $periodData) {
             if($index == 'exclusions') {
-                $serialized['periodData']['eclusions'] = parent::serializeValue($periodData);
+                $serialized['periodData']['exclusions'] = parent::serializeValue($periodData);
             } else {
                 $serializedDays = [];
                 $days = $periodData instanceof PeriodData ? $periodData : $periodData['days'];
@@ -245,7 +245,6 @@ class OpeningHoursField extends Field
         }
 
         // Get the day key order per the user's Week Start Day pref
-        /** @var User $user */
         $user = Craft::$app->getUser()->getIdentity();
         $startDay = (int)($user->getPreference('weekStartDay') ?? Craft::$app->getConfig()->getGeneral()->defaultWeekStartDay);
         $days = range($startDay, 6, 1);
@@ -282,7 +281,7 @@ class OpeningHoursField extends Field
                 foreach ($period as $index => $exclusion) {
                     $this->exclusions[$index] = [];
                     foreach($exclusion as $dataIndex => $data) {
-                        $this->exclusions[$index][$dataIndex] = ['value' => array_first($data)];
+                        $this->exclusions[$index][$dataIndex] = ['value' => is_array($data) ? array_first($data) : $data];
                     }
                 }
             }
@@ -346,6 +345,11 @@ class OpeningHoursField extends Field
                 'type' => 'time',
             ];
         }
+
+        $variables['exclusionColumns'][] = [
+            'heading' => 'Reden',
+            'type' => 'singleline'
+        ];
 //        foreach ($this->slots as $slotId => $col) {
 //            $variables['exclusionRows'][$slotId] = [
 //                'value' => null
