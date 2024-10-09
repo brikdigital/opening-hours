@@ -77,10 +77,10 @@ class OpeningHours extends Plugin
             function (Event $event) {
                 /** @var CraftVariable $variable */
                 $variable = $event->sender;
-                $variable->set('vite', [
-                    'class' => ViteVariable::class,
-                    'viteService' => $this->vite
-                ]);
+//                $variable->set('vite', [
+//                    'class' => ViteVariable::class,
+//                    'viteService' => $this->vite
+//                ]);
             }
         );
     }

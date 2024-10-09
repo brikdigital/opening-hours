@@ -25,15 +25,12 @@ use function Arrayy\array_first;
  */
 class OpeningHoursField extends Field
 {
+    public bool $multiplePeriods;
 
     /**
      * @var array|null The time slots that should be shown in the field
      */
     public $slots;
-
-    public array $periods;
-
-    public array $exclusions = [];
 
     public static function displayName(): string
     {
@@ -90,7 +87,14 @@ class OpeningHoursField extends Field
             $columns,
         ]);
 
-        return Cp::editableTableFieldHtml([
+        $multiplePeriods = Cp::lightswitchFieldHtml([
+            'label' => 'Allow multiple periods',
+            'instructions' => 'Allow adding multiple periods in this field',
+            'name' => 'multiplePeriods',
+            'on' => $this->multiplePeriods ?? false,
+        ]);
+
+        $slotTable = Cp::editableTableFieldHtml([
             'label' => Craft::t('opening-hours', 'Time Slots'),
             'instructions' => Craft::t('opening-hours', 'Define the time slots that authors should be able to fill times in for.'),
             'id' => 'slots',
@@ -103,6 +107,11 @@ class OpeningHoursField extends Field
             'addRowLabel' => Craft::t('opening-hours', 'Add a time slot'),
             'initJs' => false,
         ]);
+
+        return <<<HTML
+        {$multiplePeriods}
+        {$slotTable}
+        HTML;
     }
     /**
      * @inheritdoc
@@ -277,17 +286,15 @@ class OpeningHoursField extends Field
                 $periodData['rows'] = $rows;
                 $periods[] = $periodData;
             } else {
-                $this->exclusions = [];
+                $exclusions = [];
                 foreach ($period as $index => $exclusion) {
-                    $this->exclusions[$index] = [];
+                    $exclusions[$index] = [];
                     foreach($exclusion as $dataIndex => $data) {
-                        $this->exclusions[$index][$dataIndex] = ['value' => is_array($data) ? array_first($data) : $data];
+                        $exclusions[$index][$dataIndex] = ['value' => is_array($data) ? array_first($data) : $data];
                     }
                 }
             }
         }
-
-        $this->periods = $periods;
 
         $emptyRows = [];
         foreach ($days as $day) {
@@ -310,6 +317,7 @@ class OpeningHoursField extends Field
         $id = Html::id($this->handle);
         $nameSpacedId = $view->namespaceInputId($id);
         $settings = $this->toArray();
+        $settings['periods'] = $periods;
 
         $jsSettings = Json::encode($settings);
         $js = <<< JS
@@ -328,13 +336,18 @@ class OpeningHoursField extends Field
         $variables['tableColumns'] = $columns;
         $variables['periodData'] = $periods;
         $variables['emptyRows'] = $emptyRows;
+        $variables['multiplePeriods'] = $this->multiplePeriods;
 
         $variables['exclusionColumns'] = [];
         $variables['exclusionColumns'][] = [
             'heading' => 'Datum',
             'type' => 'date'
         ];
-        $variables['exclusionRows'] = $this->exclusions;
+        $variables['exclusionColumns'][] = [
+            'heading' => 'Reden',
+            'type' => 'singleline'
+        ];
+        $variables['exclusionRows'] = $exclusions;
 //        $variables['exclusionRows'][] = [
 //            'value' => null
 //        ];
@@ -345,11 +358,6 @@ class OpeningHoursField extends Field
                 'type' => 'time',
             ];
         }
-
-        $variables['exclusionColumns'][] = [
-            'heading' => 'Reden',
-            'type' => 'singleline'
-        ];
 //        foreach ($this->slots as $slotId => $col) {
 //            $variables['exclusionRows'][$slotId] = [
 //                'value' => null

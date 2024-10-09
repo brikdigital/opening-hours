@@ -13,9 +13,9 @@ class ExclusionData extends \ArrayObject
 
 
     public array $exclusions;
-    public function __construct(array $days)
+    public function __construct(array|string $days)
     {
-        parent::__construct($days);
+        parent::__construct($days === "" ? [] : $days);
     }
 
     /**

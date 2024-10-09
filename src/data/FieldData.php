@@ -2,7 +2,9 @@
 
 namespace brikdigital\craftopeninghours\data;
 
+use craft\helpers\DateTimeHelper;
 use DateTime;
+use Illuminate\Support\Arr;
 
 /**
  * Class FieldData
@@ -173,5 +175,131 @@ class FieldData extends \ArrayObject
         }
 
         return true;
+    }
+
+    public function getPeriods()
+    {
+        return array_filter($this['periodData'], function ($val, $key) {
+            if (!is_string($key)) return true;
+            return false;
+        }, ARRAY_FILTER_USE_BOTH);
+    }
+
+    public function getExclusions()
+    {
+        return $this['periodData']['exclusions'];
+    }
+
+    public function getExclusionsBetween(string $start, string $end)
+    {
+        $start = new DateTime($start);
+        $end = new DateTime($end);
+        $exclusions = $this['periodData']['exclusions'];
+        $res = [];
+
+        foreach ($exclusions as $exclusion) {
+            $exDate = new DateTime($exclusion[0]['date']);
+            if ($exDate->getTimestamp() >= $start->getTimestamp() && $exDate->getTimestamp() <= $end->getTimestamp()) {
+                array_push($res, $exclusion);
+            }
+        }
+
+        $res = array_filter($res);
+
+        return $res;
+    }
+
+    public function todaysTimes()
+    {
+        $today = new DateTime();
+        $day = $this->findDayInPeriods($today);
+        $exclusion = $this->findExclusionByDay($today);
+
+        if ($exclusion) {
+            return $exclusion;
+        }
+        if ($day) {
+            return $day;
+        }
+
+        return null;
+    }
+
+    public function isOpenToday(): bool
+    {
+        $today = new DateTime();
+
+        $exclusion = $this->findExclusionByDay($today);
+        if ($exclusion) {
+            return (!empty($exclusion['slot0']['time']) && !empty($exclusion['slot1']['time']));
+        }
+
+        $day = $this->findDayInPeriods($today);
+        if (isset($day['open']) && isset($day['closed'])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isOpenNow(): bool
+    {
+        $today = new DateTime();
+        $isOpen = $this->isOpenToday();
+
+        if ($isOpen) {
+            $day = $this->findDayInPeriods($today);
+            $exclusion = $this->findExclusionByDay($today);
+            $now = $this->minuteOfDay($today);
+
+            if ($exclusion) {
+                $slot0 = new DateTime($exclusion['slot0']['time']);
+                $slot1 = new DateTime($exclusion['slot1']['time']);
+                return $now >= $this->minuteOfDay($slot0) && $now <= $this->minuteOfDay($slot1);
+            }
+
+            return $now >= $this->minuteOfDay($day['open']) && $now < $this->minuteOfDay($day['closed']);
+        }
+
+
+        return false;
+    }
+
+    private function findDayInPeriods(DateTime $day)
+    {
+        $res = null;
+        $num = $day->format('w');
+
+        foreach ($this['periodData'] as $period) {
+            foreach ($period as $day) {
+                if ($num == $day->dayIndex) {
+                    $res = $day;
+                    break 2;
+                }
+            }
+        }
+
+        return $res;
+    }
+
+    private function findExclusionByDay(DateTime $day)
+    {
+        $res = null;
+        $num = $day->format('w');
+
+        foreach ($this['periodData']['exclusions'] as $exclusion) {
+            $exclusionDate = (new DateTime($exclusion[0]['date']))->format('w');
+            if ($num == $exclusionDate) {
+                $res = $exclusion;
+                break;
+            }
+        }
+
+        return $res;
+    }
+
+    private function minuteOfDay(DateTime $date): int
+    {
+        return (int)$date->format('G') * 60 + (int)ltrim($date->format('s'), '0');
     }
 }

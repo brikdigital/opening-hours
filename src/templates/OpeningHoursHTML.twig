@@ -1,43 +1,53 @@
 {% import "_includes/forms" as forms %}
 
+{% if not multiplePeriods %}
+    {% set periodData = [periodData[0]] %}
+{% endif %}
+
 {% namespace name %}
     <div id="{{ id }}" class="opening-hours-field">
-        {% for period in periodData %}
-            <div class="mb-8">
-                <div class="opening-hours-field-period mb-2">
-                    <div class="opening-hours-field-period-title flex flex-row gap-1 mb-2 justify-between">
-                        <div class="flex">
-                            <span class="period-title">{{ 'period'|t("opening-hours") }}</span>
-                            <span>{{ 'from'|t("opening-hours") }}:</span>
-                            {{ forms.date({
-                                name: "periodData[period"~loop.index~"][from]",
-                                id: id ~ "-period-from-"~loop.index,
-                                value: period.from
-                            }) }}
-                            <span>{{ 'till'|t("opening-hours") }}:</span>
-                            {{ forms.date({
-                                name: "periodData[period"~loop.index~"][till]",
-                                id: id ~ "-period-till-"~loop.index,
-                                value: period.till
+        <div class="opening-hours-periods">
+            {% for period in periodData %}
+                <div class="mb-8">
+                    <div class="opening-hours-field-period mb-2">
+                        {% if multiplePeriods %}
+                        <div class="opening-hours-field-period-title flex flex-row gap-1 mb-2 justify-between">
+                            <div class="flex">
+                                <span class="period-title">{{ 'period'|t("opening-hours") }}</span>
+                                <span>{{ 'from'|t("opening-hours") }}:</span>
+                                {{ forms.date({
+                                    name: "periodData[period"~loop.index~"][from]",
+                                    id: id ~ "-period-from-"~loop.index,
+                                    value: period.from
+                                }) }}
+                                <span>{{ 'till'|t("opening-hours") }}:</span>
+                                {{ forms.date({
+                                    name: "periodData[period"~loop.index~"][till]",
+                                    id: id ~ "-period-till-"~loop.index,
+                                    value: period.till
+                                }) }}
+                            </div>
+                            <button type="button" class="btn removePeriodButton">{{ 'Remove schedule'|t('opening-hours') }}</button>
+                        </div>
+                        {% endif %}
+                        <div class="">
+                            {{ forms.editableTable({
+                                name:  "periodData[period"~loop.index~"][days]",
+                                id: id ~ "-period-days-"~loop.index,
+                                cols: tableColumns,
+                                rows: period.rows,
+                                static: false,
+                                staticRows: true
                             }) }}
                         </div>
-                        <button type="button" class="btn removePeriodButton">{{ 'Remove schedule'|t('opening-hours') }}</button>
-                    </div>
-                    <div class="">
-                        {{ forms.editableTable({
-                            name:  "periodData[period"~loop.index~"][days]",
-                            id: id ~ "-period-days-"~loop.index,
-                            cols: tableColumns,
-                            rows: period.rows,
-                            static: false,
-                            staticRows: true
-                        }) }}
                     </div>
                 </div>
-            </div>
-        {% endfor %}
-        <button id="addNewPeriodButton" type="button" class="btn mb-8">{{ 'Add new period'|t('opening-hours') }}</button>
-        <div class="heading" class="">{{ 'Add new period'|t('opening-hours') }}</div>
+            {% endfor %}
+        </div>
+        {% if multiplePeriods %}
+            <button id="addNewPeriodButton" type="button" class="btn mb-8">{{ 'Add new period'|t('opening-hours') }}</button>
+        {% endif %}
+        <div class="heading" class="">{{ 'Exclusions'|t('opening-hours') }}</div>
         <div class="opening-hours-field-exclusions mt-2">
             {{ forms.editableTable({
                 name: "periodData[exclusions]",

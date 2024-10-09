@@ -10,7 +10,7 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
   addPeriodButton: null,
 
   init(namespacedId, id, settings) {
-    this.container = $('.opening-hours-field').first();
+    this.container = $('.opening-hours-periods').first();
     this.namespacedId = namespacedId;
     this.settings = JSON.parse(settings);
 
@@ -25,7 +25,7 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
     this.removePeriodButtons = $(`.removePeriodButton`);
     this.removePeriodButtons.on('click', (e) => {
       e.preventDefault();
-      this.deleteRow();
+      this.deleteRow(e);
     });
   },
 
@@ -53,8 +53,8 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
     this.updateAddPeriodButton();
   },
 
-  deleteRow() {
-    console.log('asfasdfaf');
+  deleteRow(e) {
+    $(e.target).closest(".mb-8").remove();
   },
 
   getNewRowHTML() {
@@ -66,6 +66,12 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
     const btn = this.addPeriodButton;
     btn.remove();
     this.container.append(btn);
+
+    this.addPeriodButton = btn;
+    this.addPeriodButton.on('click', (e) => {
+      e.preventDefault();
+      this.addRow();
+    });
   },
 });
 
