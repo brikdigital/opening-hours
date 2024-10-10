@@ -26,7 +26,7 @@ class PeriodData extends \ArrayObject
      * @param int $dayIndex
      * @param array $input
      */
-    public function __construct(\DateTime $from, \DateTime $till, array $days)
+    public function __construct(\DateTime|null $from, \DateTime|null $till, array $days)
     {
         $this->from = $from;
         $this->till = $till;

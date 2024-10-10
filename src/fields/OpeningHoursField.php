@@ -135,7 +135,7 @@ class OpeningHoursField extends Field
         $periodData = [];
         if(isset($value['periodData'])) {
             foreach($value['periodData'] as $index => $period) {
-                if($index == 'exclusions' || !isset($period['from'])) {
+                if($index == 'exclusions' && !isset($period['from'])) {
                     $periodData['periodData']['exclusions'] = new ExclusionData($period);
                 } else {
                     $data = [];
@@ -152,7 +152,7 @@ class OpeningHoursField extends Field
                         $data[] = new DayData($day, $dayData);
                     }
 
-                    $periodData['periodData'][] = new PeriodData(DateTimeHelper::toDateTime($period['from']), DateTimeHelper::toDateTime($period['till']), $data);
+                    $periodData['periodData'][] = new PeriodData($period['from'] != null ? DateTimeHelper::toDateTime($period['from']) : null, $period['till'] != null ? DateTimeHelper::toDateTime($period['till']) : null, $data);
                 }
             }
         }
@@ -194,6 +194,7 @@ class OpeningHoursField extends Field
         //Craft::dump($value);
         /** @var FieldData $value */
         $serialized = [];
+        if (!isset($value['periodData'])) return $serialized;
 
         foreach ($value['periodData'] as $index => $periodData) {
             if($index == 'exclusions') {
@@ -264,7 +265,8 @@ class OpeningHoursField extends Field
         // Build out the editable table rows, explicitly setting each cell value to an array with a 'value' key
         $locale = Craft::$app->getLocale();
         $periods = [];
-        $periodValues = $value['periodData'] ?? [[]];
+        $periodValues = count($value['periodData']) == 1 ? array_merge($value['periodData'], [[]]) : $value['periodData'];
+        $exclusions = [];
         foreach ($periodValues as $index => $period) {
             if($index != 'exclusions') {
                 $periodData = ['from' => $period->from ?? null, 'till' => $period->till ?? null];
@@ -286,7 +288,6 @@ class OpeningHoursField extends Field
                 $periodData['rows'] = $rows;
                 $periods[] = $periodData;
             } else {
-                $exclusions = [];
                 foreach ($period as $index => $exclusion) {
                     $exclusions[$index] = [];
                     foreach($exclusion as $dataIndex => $data) {

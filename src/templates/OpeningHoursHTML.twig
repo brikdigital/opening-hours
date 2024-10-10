@@ -29,6 +29,17 @@
                             </div>
                             <button type="button" class="btn removePeriodButton">{{ 'Remove schedule'|t('opening-hours') }}</button>
                         </div>
+                        {% else %}
+                            {{ forms.hidden({
+                                name: "periodData[period"~loop.index~"][from]",
+                                id: id ~ "-period-from-"~loop.index,
+                                value: null
+                            }) }}
+                            {{ forms.hidden({
+                                name: "periodData[period"~loop.index~"][till]",
+                                id: id ~ "-period-till-"~loop.index,
+                                value: null
+                            }) }}
                         {% endif %}
                         <div class="">
                             {{ forms.editableTable({
