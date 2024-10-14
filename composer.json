@@ -1,5 +1,5 @@
 {
-    "name": "brik-digital/craft-opening-hours",
+    "name": "brikdigital/craft-opening-hours",
     "description": "Extensive opening hours field with opening hours per period, multiple opening hours per day and exceptional opening hours.",
     "type": "craft-plugin",
     "version": "5.0.1",
