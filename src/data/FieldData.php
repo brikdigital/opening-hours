@@ -11,77 +11,7 @@ use Illuminate\Support\Arr;
  */
 class FieldData extends \ArrayObject
 {
-    /**
-     * Returns Sunday’s hours
-     *
-     * @return DayData
-     */
-    public function getSun(): DayData
-    {
-        return $this[0];
-    }
-
-    /**
-     * Returns Monday’s hours
-     *
-     * @return DayData
-     */
-    public function getMon(): DayData
-    {
-        return $this[1];
-    }
-
-    /**
-     * Returns Tuesday’s hours
-     *
-     * @return DayData
-     */
-    public function getTue(): DayData
-    {
-        return $this[2];
-    }
-
-    /**
-     * Returns Wednesday’s hours
-     *
-     * @return DayData
-     */
-    public function getWed(): DayData
-    {
-        return $this[3];
-    }
-
-    /**
-     * Returns Thursday’s hours
-     *
-     * @return DayData
-     */
-    public function getThu(): DayData
-    {
-        return $this[4];
-    }
-
-    /**
-     * Returns Friday’s hours
-     *
-     * @return DayData
-     */
-    public function getFri(): DayData
-    {
-        return $this[5];
-    }
-
-    /**
-     * Returns Saturday’s hours
-     *
-     * @return DayData
-     */
-    public function getSat(): DayData
-    {
-        return $this[6];
-    }
-
-    /**
+        /**
      * Returns today’s hours.
      *
      * @return DayData
@@ -122,7 +52,7 @@ class FieldData extends \ArrayObject
     }
 
     /**
-     * Returns a range of the days.
+     * Returns a range of the days in the current period.
      *
      * Specify days using these integers:
      *
@@ -177,17 +107,36 @@ class FieldData extends \ArrayObject
         return true;
     }
 
-    public function getPeriods()
+    public function getPeriods($getAllPeriods = false)
     {
-        return array_filter($this['periodData'], function ($val, $key) {
-            if (!is_string($key)) return true;
+        return array_filter($this['periodData'], function ($val, $key) use ($getAllPeriods) {
+            $now = new DateTime();
+            if(
+                (
+                    !is_string($key) &&
+                    property_exists($val,'till') &&
+                    $val->till->getTimestamp() >= $now->getTimestamp()
+                ) ||
+                (
+                    !is_string($key) &&
+                    $getAllPeriods == true
+                )
+            ) {
+                return true;
+            }
             return false;
         }, ARRAY_FILTER_USE_BOTH);
     }
 
-    public function getExclusions()
+    public function getExclusions($getAllExclusions = false)
     {
-        return $this['periodData']['exclusions'];
+        if($getAllExclusions) return $this['periodData']['exclusions'];
+        return array_filter($this['periodData']['exclusions'], function ($val) {
+            $now = new DateTime();
+            var_dump($val);
+            if(property_exists($val,'till') && $val->till->getTimestamp() >= $now->getTimestamp()) return true;
+            return false;
+        });
     }
 
     public function getExclusionsBetween(string $start, string $end)

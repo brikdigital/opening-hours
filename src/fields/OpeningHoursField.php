@@ -265,7 +265,11 @@ class OpeningHoursField extends Field
         // Build out the editable table rows, explicitly setting each cell value to an array with a 'value' key
         $locale = Craft::$app->getLocale();
         $periods = [];
-        $periodValues = count($value['periodData']) == 1 ? array_merge($value['periodData'], [[]]) : $value['periodData'];
+        if(!isset($value['periodData'])) {
+            $periodValues = [[]];
+        } else {
+            $periodValues = count($value['periodData']) == 1 ? array_merge($value['periodData'], [[]]) : $value['periodData'];
+        }
         $exclusions = [];
         foreach ($periodValues as $index => $period) {
             if($index != 'exclusions') {

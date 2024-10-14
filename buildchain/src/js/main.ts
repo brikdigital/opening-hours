@@ -22,11 +22,16 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
       this.addRow();
     });
 
-    this.removePeriodButtons = $(`.removePeriodButton`);
-    this.removePeriodButtons.on('click', (e) => {
+    this.container.delegate( ".removePeriodButton", "click", (e) => {
       e.preventDefault();
       this.deleteRow(e);
     });
+
+    // this.removePeriodButtons = $(`.removePeriodButton`);
+    // this.removePeriodButtons.on('click', (e) => {
+    //   e.preventDefault();
+    //   this.deleteRow(e);
+    // });
   },
 
   addRow() {
@@ -54,7 +59,7 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
   },
 
   deleteRow(e) {
-    $(e.target).closest(".mb-8").remove();
+    $(e.target).closest(".opening-hours-field-period").remove();
   },
 
   getNewRowHTML() {

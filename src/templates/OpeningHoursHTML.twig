@@ -8,8 +8,8 @@
     <div id="{{ id }}" class="opening-hours-field">
         <div class="opening-hours-periods">
             {% for period in periodData %}
-                <div class="mb-8">
-                    <div class="opening-hours-field-period mb-2">
+                <div class="opening-hours-field-period mb-8">
+                    <div class=" mb-2">
                         {% if multiplePeriods %}
                         <div class="opening-hours-field-period-title flex flex-row gap-1 mb-2 justify-between">
                             <div class="flex">
@@ -27,7 +27,7 @@
                                     value: period.till
                                 }) }}
                             </div>
-                            <button type="button" class="btn removePeriodButton">{{ 'Remove schedule'|t('opening-hours') }}</button>
+                            <button type="button" class="btn removePeriodButton">{{ 'Remove period'|t('opening-hours') }}</button>
                         </div>
                         {% else %}
                             {{ forms.hidden({
@@ -75,20 +75,23 @@
 
         <template id="placeholderPeriodData">
             <div class="opening-hours-field-period mb-2">
-                <div class="opening-hours-field-period-title flex flex-row gap-1 mb-2">
-                    <span class="period-title">{{ 'period'|t("opening-hours") }}</span>
-                    <span>{{ 'from'|t("opening-hours") }}:</span>
-                    {{ forms.date({
-                        name: "periodData[period___NEWINDEX___][from]",
-                        id: id ~ "-period-from-___NEWINDEX___",
-                        value: null
-                    }) }}
-                    <span>{{ 'till'|t("opening-hours") }}:</span>
-                    {{ forms.date({
-                        name: "periodData[period___NEWINDEX___][till]",
-                        id: id ~ "-period-till-___NEWINDEX___",
-                        value: null
-                    }) }}
+                <div class="opening-hours-field-period-title flex flex-row gap-1 mb-2 justify-between">
+                    <div class="flex">
+                        <span class="period-title">{{ 'period'|t("opening-hours") }}</span>
+                        <span>{{ 'from'|t("opening-hours") }}:</span>
+                        {{ forms.date({
+                            name: "periodData[period___NEWINDEX___][from]",
+                            id: id ~ "-period-from-___NEWINDEX___",
+                            value: null
+                        }) }}
+                        <span>{{ 'till'|t("opening-hours") }}:</span>
+                        {{ forms.date({
+                            name: "periodData[period___NEWINDEX___][till]",
+                            id: id ~ "-period-till-___NEWINDEX___",
+                            value: null
+                        }) }}
+                    </div>
+                    <button type="button" class="btn removePeriodButton">{{ 'Remove period'|t('opening-hours') }}</button>
                 </div>
                 <div class="">
                     {{ forms.editableTable({
