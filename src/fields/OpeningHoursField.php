@@ -198,21 +198,21 @@ class OpeningHoursField extends Field
 
         foreach ($value['periodData'] as $index => $periodData) {
             if($index == 'exclusions') {
-                $serialized['periodData']['exclusions'] = parent::serializeValue($periodData);
+                $serialized['periodData']['exclusions'] = parent::serializeValue($periodData, null);
             } else {
                 $serializedDays = [];
                 $days = $periodData instanceof PeriodData ? $periodData : $periodData['days'];
                 foreach($days as $day) {
                     $serializedDay = [];
                     foreach (array_keys($this->slots) as $colId) {
-                        $serializedDay[$colId] = parent::serializeValue($day[$colId] ?? null);
+                        $serializedDay[$colId] = parent::serializeValue($day[$colId] ?? null, null);
                     }
                     $serializedDays[] = $serializedDay;
                 }
 
                 $serializedPeriod = [
-                    'from' => parent::serializeValue(is_array($periodData) ? $periodData['from'] : $periodData->from),
-                    'till' => parent::serializeValue(is_array($periodData) ? $periodData['till'] : $periodData->till),
+                    'from' => parent::serializeValue(is_array($periodData) ? $periodData['from'] : $periodData->from, null),
+                    'till' => parent::serializeValue(is_array($periodData) ? $periodData['till'] : $periodData->till, null),
                     'days' => $serializedDays
                 ];
 
@@ -224,7 +224,7 @@ class OpeningHoursField extends Field
         return $serialized;
     }
 
-    protected function inputHtml(mixed $value, ?ElementInterface $element = null): string
+    protected function inputHtml(mixed $value, ?ElementInterface $element, bool $inline): string
     {
         // JS/CSS modules
         $tagOptions = [
