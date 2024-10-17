@@ -10,18 +10,13 @@ use yii\base\UnknownPropertyException;
  */
 class DayData extends \ArrayObject
 {
-    /**
-     * @var int The day index (0-6)
-     */
-    public $dayIndex;
 
     /**
      * @param int $dayIndex
      * @param array $input
      */
-    public function __construct(int $dayIndex, array $input)
+    public function __construct(public int $dayIndex, array $input, public $isExclusion = false, public $exclusionReason = null, public $exclusionDate = null)
     {
-        $this->dayIndex = $dayIndex;
         parent::__construct($input);
     }
 
