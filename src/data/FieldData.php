@@ -2,6 +2,7 @@
 
 namespace brikdigital\craftopeninghours\data;
 
+use Craft;
 use craft\helpers\DateTimeHelper;
 use DateTime;
 use Illuminate\Support\Arr;
@@ -133,7 +134,6 @@ class FieldData extends \ArrayObject
         if($getAllExclusions) return $this['periodData']['exclusions'];
         return array_filter($this['periodData']['exclusions'], function ($val) {
             $now = new DateTime();
-            var_dump($val);
             if(property_exists($val,'till') && $val->till->getTimestamp() >= $now->getTimestamp()) return true;
             return false;
         });
@@ -165,7 +165,7 @@ class FieldData extends \ArrayObject
         $exclusion = $this->findExclusionByDay($today);
 
         if ($exclusion) {
-            return $exclusion;
+            return $exclusion['days'];
         }
         if ($day) {
             return $day;
@@ -234,10 +234,10 @@ class FieldData extends \ArrayObject
     private function findExclusionByDay(DateTime $day)
     {
         $res = null;
-        $num = $day->format('w');
+        $num = $day->setTime(0,0,0,0)->format('U');
 
         foreach ($this['periodData']['exclusions'] as $exclusion) {
-            $exclusionDate = (new DateTime($exclusion[0]['date']))->format('w');
+            $exclusionDate = (new DateTime($exclusion[0]['date']))->setTime(0,0,0,0)->format('U');
             if ($num == $exclusionDate) {
                 $res = $exclusion;
                 break;
