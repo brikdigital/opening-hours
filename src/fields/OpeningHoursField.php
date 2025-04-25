@@ -136,23 +136,27 @@ class OpeningHoursField extends Field
         if(isset($value['periodData'])) {
             foreach($value['periodData'] as $index => $period) {
                 if($index == 'exclusions' && !isset($period['from'])) {
-
-                    foreach($period as $index => $exclusionItem) {
-                        $dayData = [];
-                        $times = array_slice($exclusionItem, 2);
-                        $day = DateTimeHelper::toDateTime($exclusionItem[0])->format('w');
-                        foreach ($this->slots as $slotId => $slot) {
-                            $dayData[$slotId] = DateTimeHelper::toDateTime($times[$slotId] ?? null) ?: null;
-                            if ($slot['handle']) {
-                                $dayData[$slot['handle']] = $dayData[$slotId];
+                    if(!empty($period) && count($period) > 0) {
+                        foreach ($period as $index => $exclusionItem) {
+                            $dayData = [];
+                            $times = array_slice($exclusionItem, 2);
+                            $day = DateTimeHelper::toDateTime($exclusionItem[0])->format('w');
+                            foreach ($this->slots as $slotId => $slot) {
+                                $dayData[$slotId] = DateTimeHelper::toDateTime($times[$slotId] ?? null) ?: null;
+                                if ($slot['handle']) {
+                                    $dayData[$slot['handle']] = $dayData[$slotId];
+                                }
                             }
+                            $dayData = new DayData($day, $dayData, true, $exclusionItem[1], DateTimeHelper::toDateTime($exclusionItem[0]));
+                            $exclusionItem['days'] = $dayData;
+
+                            $period[$index] = $exclusionItem;
                         }
-                        $dayData = new DayData($day, $dayData, true, $exclusionItem[1], DateTimeHelper::toDateTime($exclusionItem[0]));
-                        $exclusionItem['days'] = $dayData;
 
-                        $period[$index] = $exclusionItem;
+
+                    } else {
+                        $period = [];
                     }
-
                     $periodData['periodData']['exclusions'] = new ExclusionData($period);
                 } else {
                     $data = [];

@@ -131,12 +131,14 @@ class FieldData extends \ArrayObject
 
     public function getExclusions($getAllExclusions = false)
     {
-        if($getAllExclusions) return $this['periodData']['exclusions'];
-        return array_filter($this['periodData']['exclusions'], function ($val) {
-            $now = new DateTime();
-            if(property_exists($val,'till') && $val->till->getTimestamp() >= $now->getTimestamp()) return true;
-            return false;
-        });
+        return $this['periodData']['exclusions'];
+        // @TODO exclusions are not related to periods right so why is this needed?
+//        if($getAllExclusions) return $this['periodData']['exclusions'];
+//        return array_filter((array) $this['periodData']['exclusions'], function ($val) {
+//            $now = new DateTime();
+//            if(property_exists($val,'till') && $val->till->getTimestamp() >= $now->getTimestamp()) return true;
+//            return false;
+//        });
     }
 
     public function getExclusionsBetween(string $start, string $end)
