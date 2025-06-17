@@ -135,10 +135,10 @@ class OpeningHoursField extends Field
         }
         $periodData = [];
         if(isset($value['periodData'])) {
-            foreach($value['periodData'] as $i => $period) {
-                if($i === 'exclusions' && !isset($period['from'])) {
+            foreach($value['periodData'] as $index => $period) {
+                if($index == 'exclusions' && !isset($period['from'])) {
                     if(!empty($period) && count($period) > 0) {
-                        foreach ($period as $j => $exclusionItem) {
+                        foreach ($period as $index => $exclusionItem) {
                             $dayData = [];
                             $times = array_slice($exclusionItem, 2);
                             $day = DateTimeHelper::toDateTime($exclusionItem[0])->format('w');
@@ -151,7 +151,7 @@ class OpeningHoursField extends Field
                             $dayData = new DayData($day, $dayData, true, $exclusionItem[1], DateTimeHelper::toDateTime($exclusionItem[0]));
                             $exclusionItem['days'] = $dayData;
 
-                            $period[$j] = $exclusionItem;
+                            $period[$index] = $exclusionItem;
                         }
 
 
@@ -293,8 +293,8 @@ class OpeningHoursField extends Field
             $periodValues = count($value['periodData']) == 1 ? array_merge($value['periodData'], [[]]) : $value['periodData'];
         }
         $exclusions = [];
-        foreach ($periodValues as $i => $period) {
-            if($i !== 'exclusions') {
+        foreach ($periodValues as $index => $period) {
+            if($index != 'exclusions') {
                 $periodData = ['from' => $period->from ?? null, 'till' => $period->till ?? null];
                 $rows = [];
                 foreach ($days as $day) {
@@ -314,10 +314,10 @@ class OpeningHoursField extends Field
                 $periodData['rows'] = $rows;
                 $periods[] = $periodData;
             } else {
-                foreach ($period as $j => $exclusion) {
-                    $exclusions[$j] = [];
+                foreach ($period as $index => $exclusion) {
+                    $exclusions[$index] = [];
                     foreach($exclusion as $dataIndex => $data) {
-                        $exclusions[$j][$dataIndex] = ['value' => is_array($data) ? array_first($data) : $data];
+                        $exclusions[$index][$dataIndex] = ['value' => is_array($data) ? array_first($data) : $data];
                     }
                 }
             }
