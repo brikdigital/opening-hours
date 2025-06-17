@@ -13,6 +13,7 @@ use craft\base\ElementInterface;
 use craft\base\Field;
 use craft\helpers\Html;
 use craft\helpers\Json;
+use craft\web\View;
 use yii\base\InvalidConfigException;
 use yii\db\Schema;
 use craft\i18n\Locale;
@@ -74,13 +75,13 @@ class OpeningHoursField extends Field
         $view = Craft::$app->getView();
 
         $view->registerJsWithVars(fn($id, $name, $columns) => <<<JS
-        new Craft.EditableTable($id, $name, $columns, {
-            allowAdd: true,
-            allowDelete: true,
-            allowReorder: true,
-            minRows: 1,
-            rowIdPrefix: 'slot'
-        });
+            new Craft.EditableTable($id, $name, $columns, {
+                allowAdd: true,
+                allowDelete: true,
+                allowReorder: true,
+                minRows: 1,
+                rowIdPrefix: 'slot'
+            });
         JS, [
             $view->namespaceInputId('slots'),
             $view->namespaceInputName('slots'),
@@ -134,10 +135,10 @@ class OpeningHoursField extends Field
         }
         $periodData = [];
         if(isset($value['periodData'])) {
-            foreach($value['periodData'] as $index => $period) {
-                if($index == 'exclusions' && !isset($period['from'])) {
+            foreach($value['periodData'] as $i => $period) {
+                if($i === 'exclusions' && !isset($period['from'])) {
                     if(!empty($period) && count($period) > 0) {
-                        foreach ($period as $index => $exclusionItem) {
+                        foreach ($period as $j => $exclusionItem) {
                             $dayData = [];
                             $times = array_slice($exclusionItem, 2);
                             $day = DateTimeHelper::toDateTime($exclusionItem[0])->format('w');
@@ -150,7 +151,7 @@ class OpeningHoursField extends Field
                             $dayData = new DayData($day, $dayData, true, $exclusionItem[1], DateTimeHelper::toDateTime($exclusionItem[0]));
                             $exclusionItem['days'] = $dayData;
 
-                            $period[$index] = $exclusionItem;
+                            $period[$j] = $exclusionItem;
                         }
 
 
@@ -292,8 +293,8 @@ class OpeningHoursField extends Field
             $periodValues = count($value['periodData']) == 1 ? array_merge($value['periodData'], [[]]) : $value['periodData'];
         }
         $exclusions = [];
-        foreach ($periodValues as $index => $period) {
-            if($index != 'exclusions') {
+        foreach ($periodValues as $i => $period) {
+            if($i !== 'exclusions') {
                 $periodData = ['from' => $period->from ?? null, 'till' => $period->till ?? null];
                 $rows = [];
                 foreach ($days as $day) {
@@ -313,10 +314,10 @@ class OpeningHoursField extends Field
                 $periodData['rows'] = $rows;
                 $periods[] = $periodData;
             } else {
-                foreach ($period as $index => $exclusion) {
-                    $exclusions[$index] = [];
+                foreach ($period as $j => $exclusion) {
+                    $exclusions[$j] = [];
                     foreach($exclusion as $dataIndex => $data) {
-                        $exclusions[$index][$dataIndex] = ['value' => is_array($data) ? array_first($data) : $data];
+                        $exclusions[$j][$dataIndex] = ['value' => is_array($data) ? array_first($data) : $data];
                     }
                 }
             }
@@ -347,13 +348,15 @@ class OpeningHoursField extends Field
 
         $jsSettings = Json::encode($settings);
         $js = <<< JS
-            var openingHoursInput = new Craft.OpeningHours.Input('$nameSpacedId', '$id', '$jsSettings');
+            document.addEventListener('opening-hours-init', () => {
+                window['$nameSpacedId-input'] = new Craft.OpeningHours.Input('$nameSpacedId', '$id', '$jsSettings');
+            })
         JS;
         foreach ($periods as $period) {
             $periodJs = Json::encode($period);
-//            $js .= "\nopeningHoursInput.addPeriod($periodJs)";
+//            $js .= "\nwindow['$nameSpacedId-input'].addPeriod($periodJs)";
         }
-        $view->registerJs($js);
+        $view->registerJs($js, View::POS_END);
 
         $variables = [];
         $variables['name'] = $this->handle;

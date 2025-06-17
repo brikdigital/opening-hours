@@ -80,6 +80,11 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
   },
 });
 
+// HACK: For some godawful reason, I cannot get this AssetBundle JS to execute
+// *before* the one added with View#registerJs in OpeningHoursField.php:L357.
+// So let's do some dirty event-based code execution. :)
+document.dispatchEvent(new CustomEvent('opening-hours-init'));
+
 if (import.meta.hot) {
   import.meta.hot.accept();
 }

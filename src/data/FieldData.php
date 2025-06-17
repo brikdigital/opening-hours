@@ -222,8 +222,8 @@ class FieldData extends \ArrayObject
         $num = $day->format('w');
 
         foreach ($this['periodData'] as $period) {
-            foreach ($period as $day) {
-                if ($num == $day->dayIndex) {
+            foreach ($period as $pDay) {
+                if ($num === $pDay->dayIndex) {
                     $res = $day;
                     break 2;
                 }
@@ -240,7 +240,7 @@ class FieldData extends \ArrayObject
 
         foreach ($this['periodData']['exclusions'] as $exclusion) {
             $exclusionDate = (new DateTime($exclusion[0]['date']))->setTime(0,0,0,0)->format('U');
-            if ($num == $exclusionDate) {
+            if ($num === $exclusionDate) {
                 $res = $exclusion;
                 break;
             }
