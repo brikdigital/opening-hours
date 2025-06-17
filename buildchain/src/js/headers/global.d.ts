@@ -11,6 +11,7 @@ declare namespace Craft.OpeningHours {
     addPeriodButton: JQuery<HTMLElement>;
 
     addRow(this): void;
+    deleteRow(this, e: JQuery.ClickEvent<HTMLElement, undefined>): void;
     getNewRowHTML(this): string;
     updateAddPeriodButton(this): void;
   }

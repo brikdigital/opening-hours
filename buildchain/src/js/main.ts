@@ -73,7 +73,7 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
     this.container.append(btn);
 
     this.addPeriodButton = btn;
-    this.addPeriodButton.on('click', (e) => {
+    this.addPeriodButton.on('click', (e: MouseEvent) => {
       e.preventDefault();
       this.addRow();
     });

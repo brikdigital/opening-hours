@@ -11,7 +11,7 @@
     "vue-confetti": "^2.0.8"
   },
   "devDependencies": {
-    "@brik-digital/craftcms-typedefs": "^1.1.0",
+    "@brik-digital/craftcms-typedefs": "^1.1.1",
     "@types/jquery": "^3.5.30",
     "@types/jqueryui": "^1.12.22",
     "@types/node": "^18.0.0",

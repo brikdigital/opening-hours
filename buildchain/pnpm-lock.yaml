@@ -16,8 +16,8 @@ importers:
         version: 2.3.0
     devDependencies:
       '@brik-digital/craftcms-typedefs':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^1.1.1
+        version: 1.1.1
       '@types/jquery':
         specifier: ^3.5.30
         version: 3.5.30
@@ -122,8 +122,8 @@ packages:
     resolution: {integrity: sha512-/l42B1qxpG6RdfYf343Uw1vmDjeNhneUXtzhojE7pDgfpEypmRhI6j1kr17XCVv4Cgl9HdAiQY2x0GwKm7rWCw==}
     engines: {node: '>=6.9.0'}
 
-  '@brik-digital/craftcms-typedefs@1.1.0':
-    resolution: {integrity: sha512-czUVhv+k8LLCxO2JTLLRHyBJpNOd0tXAHjkFKcGRDYa71lfDOfYyYu1Fz6rkomrG84GTs+rkWDreKx670+Kghg==}
+  '@brik-digital/craftcms-typedefs@1.1.1':
+    resolution: {integrity: sha512-MmF8jTPGn44jaMDCUshCl1lWYmtlLgDUwz/LNkTbCTTx74HVc8o16sUr9BCmzsAzWl5QS4LDEJduXBh6iaQVYA==}
 
   '@csstools/selector-specificity@2.2.0':
     resolution: {integrity: sha512-+OJ9konv95ClSTOJCmMZqpd5+YGsB2S+x6w3E1oaM8UuR5j8nTNHYSz8c9BEPGDOCMQYIEEGlVPj/VY64iTbGw==}
@@ -1829,7 +1829,7 @@ snapshots:
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
 
-  '@brik-digital/craftcms-typedefs@1.1.0': {}
+  '@brik-digital/craftcms-typedefs@1.1.1': {}
 
   '@csstools/selector-specificity@2.2.0(postcss-selector-parser@6.1.2)':
     dependencies:
