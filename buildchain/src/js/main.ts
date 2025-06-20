@@ -44,16 +44,10 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
       $block: period,
     });
 
-    // TODO: Add to typedefs
     Craft.initUiElements(period);
 
-    // TODO: Add Craft.date/timepickerOptions to typedefs
-    // TODO: Figure out why the date pickers are malfunctioning
-    // TODO: Either one of these is probably valid, preference for the latter
     $('.datewrapper > input', period).datepicker(Craft.datepickerOptions);
     $('.timewrapper > input', period).timepicker(Craft.timepickerOptions);
-    // period.datepicker(Craft.datepickerOptions);
-    // period.timepicker(Craft.timepickerOptions);
 
     this.updateAddPeriodButton();
   },
@@ -81,8 +75,8 @@ Craft.OpeningHours.Input = Garnish.Base.extend({
 });
 
 // HACK: For some godawful reason, I cannot get this AssetBundle JS to execute
-// *before* the one added with View#registerJs in OpeningHoursField.php:L357.
-// So let's do some dirty event-based code execution. :)
+//   *before* the one added with View#registerJs in OpeningHoursField.php:L357.
+//   So let's do some dirty event-based code execution. :)
 document.dispatchEvent(new CustomEvent('opening-hours-init'));
 
 if (import.meta.hot) {
